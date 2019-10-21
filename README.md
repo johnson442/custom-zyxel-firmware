@@ -10,6 +10,10 @@ Choice to include an older version of the telnetd binary from previous firmware 
  
 #### Later adsl_phy.bin
 Latest firmware from Zyxel include the A2pv6F039**v** DSL modem code, other devices with the same BCM63168 chipset have received firmware with later A2pv6F039**x1** & A2pv6F039**x6** modem code, either can be included for testing.
+
+#### Custom commands at boot
+
+Place holder script in /data partition run once every boot to allow persistent changes to target SNRM or line capping. See /data/boot-cmds.sh after first boot for details.
  
 #### Modem stats server with logging and web interface
 A small mongoose based http server with simple visualisation of real time and logged statistics avaliable by default on modemip:8000. 
@@ -20,9 +24,6 @@ A small mongoose based http server with simple visualisation of real time and lo
 
 48h line statistics are captured, see stats-server/stats-logging.sh for details.
 
-#### Custom commands at boot
-
-Place holder script in /data partition run once every boot to allow persistent changes to target SNRM or line capping. See /data/boot-cmds.sh after first boot for details.
 
 ## Prerequisites
  
@@ -66,6 +67,8 @@ to be added to the docker run commands, eg:
 sudo docker run -it --security-opt label:disable --name vmg-build -v "$(pwd)":/tmp/mount vmg-lucid
 ```
 
+During docker image build on such systems warnings can be ignored.
+
 To run the container again at a later date:
 
 ```
@@ -73,4 +76,4 @@ docker start -i vmg-build
 ```
 
 ### Disclaimer
-Released binaries have been at minimum tested to boot on correct hardware, but use at your own risk. Having a serial adapter on hand is highly encouraged.
+Released [binaries](https://github.com/johnson442/custom-zyxel-firmware/releases) have been at minimum tested to boot on correct hardware, but use at your own risk. Having a serial adapter on hand is highly encouraged.
