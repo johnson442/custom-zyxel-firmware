@@ -1,0 +1,12 @@
+--- Makefile	2019-10-13 18:20:20.451556243 +0100
++++ stats_httpd_Makefile_8324	2019-10-13 18:18:51.953262364 +0100
+@@ -13,6 +13,9 @@
+ 	cp -rf html/ZyXEL_Brick/* $(INSTALL_DIR)/webs/Brick
+ 	cp -rf html/ZyXEL_Brick/pages/VMG8924-B10A/* $(INSTALL_DIR)/webs/Brick/pages
+ 
++	mkdir -p $(INSTALL_DIR)/webs/stats-server
++	cp stats-server-bin $(INSTALL_DIR)/bin
++	cp -rf stats-server/* $(INSTALL_DIR)/webs/stats-server
+ 
+ clean:
+ 	rm -f httpd

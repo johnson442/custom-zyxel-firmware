@@ -1,0 +1,19 @@
+Add Zyxel GPL source here, either acquired from them or from the github releases.
+
+Directories should be named:
+
+GPL_Release_V100AAJZ17C0
+
+or
+
+GPL_Release_V100AAKL28C0
+
+Visit https://github.com/johnson442/zyxel-sources/releases and download correct:
+
+bcm963xx_4.12L.06B_consumer_release.tar.gz
+
+for your device.
+
+Or use VMG1312-fromgit/VMG8x23-fromgit scripts.
+
+Alternatively visit https://www.zyxel.com/form/gpl_oss_software_notice.shtml and request source.

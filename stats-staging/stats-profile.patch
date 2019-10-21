@@ -1,0 +1,31 @@
+--- profile	2019-10-13 17:43:57.424422220 +0100
++++ stats_profile	2019-10-13 17:46:24.874633178 +0100
+@@ -106,6 +106,28 @@
+  # __MSTC__, reduce manufacture bootup time, DelonYu
+  #smd
+ fi
++
++#Stats server stuff
++mkdir /var/tmp/stats
++mkdir /var/tmp/stats/data
++cp -r /webs/stats-server/* /var/tmp/stats/
++chmod +x /var/tmp/stats/stats-logging.sh
++ 
++touch /var/tmp/stats/data/logfile
++touch /var/tmp/stats/data/curTime
++touch /var/tmp/stats/data/stats
++touch /var/tmp/stats/data/vendor
++touch /var/tmp/stats/data/SNR
++touch /var/tmp/stats/data/Bits
++touch /var/tmp/stats/data/Hlog
++touch /var/tmp/stats/data/QLN
++echo "DONE" > /var/tmp/stats/getdata
++ 
++stats-server-bin &
++/var/tmp/stats/./stats-logging.sh &
++ 
++echo "Stats server & logging running"
++
+ #iptk daemon
+  test -e /bin/icf.exe && /bin/icf.exe &
+ # __MSTC__, reduce manufacture bootup time, DelonYu start

@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<title>VmgGraphs</title>
+
+<script src="gz/jquery.min.js.gz"></script>
+
+<script src="gz/jquery-confirm.min.js.gz"></script>
+<link rel="stylesheet" href="gz/jquery-confirm.min.css.gz">
+
+<script src="gz/jszip.min.js.gz"></script>
+<script src="gz/FileSaver.js.gz"></script>
+
+<script src="gz/dygraph-touch.min.js.gz"></script>
+<link rel="stylesheet" href="gz/dygraph.min.css.gz" />
+
+<link rel="manifest" href="/manifest.json">
+
+<link rel="apple-touch-icon" href="icons/touch-icon-iphone.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/touch-icon-ipad.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/touch-icon-iphone-retina.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icons/touch-icon-ipad-retina.png">
+
+<style>
+
+body {
+    font-family: sans-serif;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    outline: 0;
+    font-size: large;
+}
+
+
+body.hasHover li a:hover {
+    /*background-color: #111;*/
+    background-color: #4CAF50;
+}
+
+.active {
+    background-color: #4CAF50;
+    /*background-color: #000;*/
+
+}
+
+/*
+#graphcontainer{
+    position: absolute;
+    left: 10px;
+    right: 50px;
+    top: 100px;
+    bottom: 30px;
+}
+*/
+
+#graphcontainer{
+    position: absolute;
+    left: 2%;
+    right: 5%;
+    top: 100px;
+    bottom: 5%;
+    display: none;
+}
+
+
+
+#legend {
+    padding-top: 10px;
+    text-align: center;
+}
+
+
+@media screen and (orientation:portrait) {
+  #graphcontainer{
+    bottom: 40%;
+  }
+}
+
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  /*background-color: #2196F3;*/
+  /*background-color: grey;*/
+  padding: 10px;
+  margin: 20px;
+}
+.grid-item {
+  /*background-color: rgba(255, 255, 255, 0.8);*/
+  /*background-color: rgba(150, 150, 150, 1);*/
+  /*border: 1px solid rgba(0, 0, 0, 0.8);*/
+  padding: 10px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.grid-item.span {
+  grid-column-start: 1;
+  grid-column-end:   5;
+}
+.up {
+  color: green;
+}
+.down {
+  color: blue;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<ul class="nav" id="nav">
+  <li><a class="active" href="#Stats" id="statsLink">Stats</a></li>
+  <li><a href="#SNRM" id="snrmLink">SNRM</a></li>
+  <li><a href="#FEC" id="fecLink">FEC</a></li>
+  <li><a href="#CRC" id="crcLink">CRC</a></li>
+  <li><a href="#SNR" id="snrLink">SNR</a></li>
+  <li><a href="#Bits" id="bitsLink">Bits</a></li>
+  <li><a href="#QLN" id="qlnLink">QLN</a></li>
+  <li><a href="#Hlog" id="hlogLink">Hlog</a></li>
+  <li><a href="data/" id="dataLink">Data</a></li>
+  <li><a href="#Save" id="saveLink">Save</a></li>
+  <li style="float:right"><a href="#" id="scaleToggle">lin</a></li>
+  <li style="float:right"><a href="#" id="toneToggle">full</a></li>
+</ul>
+
+<div id="stats-grid" class="grid-container">
+  <div class="grid-item">
+  <h3>Sync</h3>
+  <p class="down" id="sync-down"></p>
+  <p class="up" id="sync-up"></p>
+  </div>
+  <div class="grid-item">
+  <h3>Attainable</h3>
+  <p class="down" id="max-down"></p>
+  <p class="up" id="max-up"></p>
+  </div>
+  <div class="grid-item">
+  <h3>SNR</h3>
+  <p class="down" id="snr-down"></p>
+  <p class="up" id="snr-up"></p>
+  </div>
+  <div class="grid-item">
+  <h3>Attenuation</h3>
+  <p class="down" id="att-down"></p>
+  <p class="up" id="att-up"></p>
+  </div>
+  <div class="grid-item">
+  <h3>CRC</h3>
+  <p class="down" id="crc-down"></p>
+  <p class="up" id="crc-up"></p>
+  </div>
+  <div class="grid-item">
+  <h3>ES</h3>
+  <p class="down" id="es-down"></p>
+  <p class="up" id="es-up"></p>
+  </div>
+  <div class="grid-item">
+  <h3>SES</h3>
+  <p class="down" id="ses-down"></p>
+  <p class="up" id="ses-up"></p>
+  </div>
+  <div class="grid-item">
+  <h3>FEC</h3>
+  <p class="down" id="fec-down"></p>
+  <p class="up" id="fec-up"></p>
+  </div>
+  <div class="grid-item span">
+  <h3>Link Uptime</h3>
+  <p id="uptime"></p>
+  </div>
+</div>
+
+<div id="legend"></div>
+
+<div id="graphcontainer">
+</div>
+
+
+
+<script>
+
+/*
+$(document).ready(function(){
+    vmgGraphs.getLineDetails();
+    vmgGraphs.makeSnrmGraph();
+    //vmgGraphs.makeSnrToneGraph();
+});
+*/
+
+document.addEventListener('DOMContentLoaded', () => {
+    vmgGraphs.getLineDetails();
+    //vmgGraphs.makeSnrmGraph();
+    vmgGraphs.makeStatsGrid();
+    
+});
+
+document.getElementById('statsLink').addEventListener('click', function(){
+    vmgGraphs.changeActive(this);
+    vmgGraphs.makeStatsGrid();
+});
+
+document.getElementById('snrmLink').addEventListener('click', function(){
+    vmgGraphs.changeActive(this);
+    vmgGraphs.makeSnrmGraph();
+});
+
+/*
+$('#snrmLink').click(function(){
+    vmgGraphs.changeActive(this);
+    vmgGraphs.makeSnrmGraph();
+});
+*/
+
+
+$('#fecLink').click(function(){
+    vmgGraphs.changeActive(this);
+    vmgGraphs.makeFecGraph();
+});
+$('#crcLink').click(function(){
+    vmgGraphs.changeActive(this);
+    vmgGraphs.makeCrcGraph();
+});
+$('#snrLink').click(function(){
+    vmgGraphs.changeActive(this);
+    vmgGraphs.makeSnrToneGraph();
+});
+$('#qlnLink').click(function(){
+    vmgGraphs.changeActive(this);
+    vmgGraphs.makeQlnToneGraph();
+});
+$('#hlogLink').click(function(){
+    vmgGraphs.changeActive(this);
+    vmgGraphs.makeHlogToneGraph();
+});
+$('#bitsLink').click(function(){
+    vmgGraphs.changeActive(this);
+    vmgGraphs.makeBitsToneGraph();
+});
+$('#saveLink').click(function(){
+    vmgGraphs.saveData();
+});
+$('#toneToggle').click(function(){
+    vmgGraphs.toggleToneRange();
+});
+$('#scaleToggle').click(function(){
+    vmgGraphs.toggleScale();
+});
+
+var vmgGraphs = (function(){
+
+    var lineType = null;
+    var cabType = null;
+
+    var topTone = null;
+
+    var logfileUri = "data/logfile";
+    var curTimeUri = "data/curTime";
+
+    var statsFileUri = "data/stats";
+    var vendorFileUri = "data/vendor";
+
+    var snrUri = "data/SNR";
+    var bitsUri = "data/Bits";
+    var hlogUri = "data/Hlog";
+    var qlnUri = "data/QLN";
+
+    var dg = null;
+
+    var graphType = null;
+
+    var type = "linear";
+    var range = "full";
+
+    var rangeWindow = null;
+
+    var tonesADSL2 = {upRange:[6,31], downRange:[33,511]};
+    var tonesVDSL2Huawei = {upRange:[7,32,871,1205,1972,2782], downRange:[33,859,1216,1961,2793,3970]};
+    var tonesVDSL2ECI = {upRange:[6,31,882,1193,1984,2740], downRange:[33,857,1218,1959,2795,4083]};
+
+    var toneRange = null;
+
+    jconfirm.pluginDefaults.useBootstrap = false;
+
+    var saveData = function(){
+        $.confirm({
+            title: 'Download archive',
+            content: 'Do you want to download all stats files and log in zip form?',
+            boxWidth: '30%',
+            backgroundDismiss: true,
+            buttons: {
+                cancel: function () {
+                    //$.alert('Canceled!');
+                },
+                save: {
+                    text: 'Download',
+                    btnClass: 'btn-blue',
+                    keys: ['enter', 'shift'],
+                    action: function(){
+                        saveDataFunction();
+                    }
+                }
+            }
+        });
+    }
+
+
+    var changeActive = function(t){
+        var current = document.getElementsByClassName("active");
+        current[0].className = current[0].className.replace("active", "");
+        var next = document.getElementById(t.id).classList.add("active");
+    }
+
+
+    var getLineDetails = function(){
+
+        //Synchronous call so we have line details before drawing graphs
+        $.ajax({
+            url: statsFileUri,
+            success: function (statsfile) {
+
+                //Determine if VDSL or ADSL line and set appropriate tone range 
+
+                var split = statsfile.split("\n");
+                var modeLine = 0;
+
+                while(split[modeLine].match(/\S+/g)[0] != "Mode:"){
+                    modeLine++;
+                }
+
+                var modeSplit = split[modeLine].match(/\S+/g) || [];
+
+                lineType = modeSplit[1];
+
+                if (lineType == "VDSL2"){
+
+                    $.get(vendorFileUri, function(vendorfile, status){
+                        var split = vendorfile.split("\n");
+                        var vendorLine = 0;
+                        while(split[vendorLine].match(/\S+/g)[0] != "ChipSet"){
+                            vendorLine++;
+                        }
+
+                        var provider = split[vendorLine].match(/\S+/g)[3].split(":")[0];
+
+                        if(provider == "BDCM") {
+                            cabType = "Huawei";
+                            toneRange = tonesVDSL2Huawei;
+                        }else if ( provider == "IFTN"){
+                            cabType = "ECI";
+                            toneRange = tonesVDSL2ECI;
+                        }
+                    });
+
+                }else{
+                    toneRange = tonesADSL2;
+                }
+
+                //Use bitloading to determine maximum tone used
+                $.get(bitsUri, function(bitsfile, status){
+                    getTopToneUsed(bitsfile);
+                });
+
+            },
+            async: false
+        });
+
+        //! Move to separate setup function called on document ready
+        if (!hasTouch()) {
+            document.body.className += ' hasHover';
+        }
+    }
+
+
+    var hasTouch = function () {
+        return 'ontouchstart' in document.documentElement
+            || navigator.maxTouchPoints > 0
+            || navigator.msMaxTouchPoints > 0;
+    }
+
+
+    var resetToggle = function(){
+
+        type = "linear";
+        document.getElementById('scaleToggle').innerHTML = "lin";
+
+        //range = "full";
+        //document.getElementById('toneToggle').innerHTML = "full";
+    }
+
+
+    var toggleScale = function(){
+
+        type = type === "linear" ? "logarithmic" : "linear";
+
+        document.getElementById('scaleToggle').innerHTML = type.substring(0,3);
+
+        if( dg != null){
+            if(type == "linear"){
+                dg.updateOptions({
+                    logscale: false
+                });
+            }else{
+                dg.updateOptions({
+                    logscale: true
+                });
+            }
+        }
+    }
+
+
+    var toggleToneRange = function(){
+
+        if(graphType == "tone"){
+
+            range = range === "full" ? "used" : "full";
+
+            document.getElementById('toneToggle').innerHTML = range;
+
+            if( dg != null){
+
+                if(range == "used"){
+                    rangeWindow =  [0, topTone];
+                    dg.updateOptions({
+                        dateWindow: [0, topTone]
+                    });
+                }else{
+                    rangeWindow =  null;
+                    dg.updateOptions({
+                        dateWindow: null
+                    });
+                }
+            }
+        }
+    }
+
+    var makeTimeGraph = function(title, downIndex, upIndex) {
+
+        document.getElementById("stats-grid").style.display = "none";
+
+
+        graphType = "time";
+
+        resetToggle();
+
+        $.get(logfileUri, function(logfile, status){
+             $.get(curTimeUri, function(curTime, status){
+
+                 var timeObj = getLogDataIndex(logfile, curTime, downIndex, upIndex);
+
+                 if (dg) dg.destroy();
+                 document.getElementById("graphcontainer").style.display = "block";
+
+                 dg = new Dygraph(document.getElementById("graphcontainer"),
+                     timeObj,
+                     {
+                         animatedZooms: true,
+                         labels: ['Data', 'Up', 'Down'],
+                         labelsDiv: 'legend',
+                         legend: 'onmouseover',
+                         ylabel: title,
+                         labelsKMB: true
+                     }
+                 );
+
+             });
+         });
+    }
+
+
+
+    var makeToneGraph = function(title, dataUri){
+
+        document.getElementById("stats-grid").style.display = "none";
+
+        graphType = "tone";
+
+        //resetToggle();
+
+        $.get(dataUri, function(datafile, status){
+
+            var dataObj = getDataPerTone(datafile);
+
+            if (dg) dg.destroy();
+            document.getElementById("graphcontainer").style.display = "block";
+
+            dg = new Dygraph(document.getElementById("graphcontainer"),
+                dataObj,
+                {
+                    animatedZooms: true,
+                    labels: ['Tone', 'Up', 'Down'],
+                    labelsDiv: 'legend',
+                    dateWindow: rangeWindow,
+                    legend: 'onmouseover',
+                    ylabel: title,
+                    xlabel: "Tone"
+                }
+            );
+        });
+    }
+
+    var getStats = function(){
+        $.get(statsFileUri, function(statsfile, status){
+
+            var split = statsfile.split("\n");
+            var statLine = 0;
+
+            while(split[statLine].match(/\S+/g)[0] != "Max:"){
+                statLine++;
+            }
+
+            var statSplit = split[statLine].match(/\S+/g) || [];
+
+            var maxUp = statSplit[4];
+            var maxDown = statSplit[9];
+
+            while(split[statLine].match(/\S+/g)[0] != "Bearer:"){
+                statLine++;
+            }
+
+            statSplit = split[statLine].match(/\S+/g) || [];
+
+            var syncUp = statSplit[5];
+            var syncDown = statSplit[10];
+
+            while(split[statLine].match(/\S+/g)[0] != "SNR"){
+                statLine++;
+            }
+
+            statSplit = split[statLine].match(/\S+/g) || [];
+
+            var snrUp = statSplit[3];
+            var snrDown = statSplit[2];
+
+            while(split[statLine].match(/\S+/g)[0] != "Attn(dB):"){
+                statLine++;
+            }
+
+            statSplit = split[statLine].match(/\S+/g) || [];
+
+            var attUp = statSplit[2];
+            var attDown = statSplit[1];
+            
+            var splitLine = split[statLine].match(/\S+/g) || [];
+            while(splitLine[0] != "AS:"){
+                statLine++;
+                splitLine = split[statLine].match(/\S+/g) || [];
+            }
+
+            statSplit = split[statLine].match(/\S+/g) || [];
+
+            var uptime = statSplit[1];
+
+            //Start at end of stats file to get link time errors
+            statLine = split.length - 2 ;
+
+
+            while(split[statLine].match(/\S+/g)[0] != "SES:"){
+                statLine--;
+            }
+
+            statSplit = split[statLine].match(/\S+/g) || [];
+
+            var sesUp = statSplit[2];
+            var sesDown = statSplit[1];
+
+
+            statLine--;
+
+            statSplit = split[statLine].match(/\S+/g) || [];
+
+            var esUp = statSplit[2];
+            var esDown = statSplit[1];
+
+            statLine--;
+
+            statSplit = split[statLine].match(/\S+/g) || [];
+
+            var crcUp = statSplit[2];
+            var crcDown = statSplit[1];
+
+            statLine--;
+
+            statSplit = split[statLine].match(/\S+/g) || [];
+
+            var fecUp = statSplit[2];
+            var fecDown = statSplit[1];
+
+
+
+
+            document.getElementById('max-up').innerHTML = maxUp + " Kbps";
+            document.getElementById('max-down').innerHTML = maxDown + " Kbps";
+
+            document.getElementById('sync-up').innerHTML = syncUp + " Kbps";
+            document.getElementById('sync-down').innerHTML = syncDown + " Kbps";
+
+            document.getElementById('snr-up').innerHTML = snrUp + " dB";
+            document.getElementById('snr-down').innerHTML = snrDown + " dB";
+
+            document.getElementById('att-up').innerHTML = attUp + " dB";
+            document.getElementById('att-down').innerHTML = attDown + " dB";
+
+            document.getElementById('ses-up').innerHTML = sesUp;
+            document.getElementById('ses-down').innerHTML = sesDown;
+
+            document.getElementById('es-up').innerHTML = esUp;
+            document.getElementById('es-down').innerHTML = esDown;
+
+            document.getElementById('crc-up').innerHTML = crcUp;
+            document.getElementById('crc-down').innerHTML = crcDown;
+
+            document.getElementById('fec-up').innerHTML = fecUp;
+            document.getElementById('fec-down').innerHTML = fecDown;
+
+
+
+            document.getElementById('uptime').innerHTML = secondsToDhms(uptime);
+
+        });
+    }
+
+    function secondsToDhms(seconds) {
+        seconds = Number(seconds);
+        var d = Math.floor(seconds / (3600*24));
+        var h = Math.floor(seconds % (3600*24) / 3600);
+        var m = Math.floor(seconds % 3600 / 60);
+        var s = Math.floor(seconds % 60);
+
+        var dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
+        var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+        var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+        var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+        return dDisplay + hDisplay + mDisplay + sDisplay;
+    }
+
+    var makeSnrmGraph = function() {
+        makeTimeGraph("SNRM / dB", 1, 2);
+    }
+
+    var makeFecGraph = function() {
+        makeTimeGraph("FEC", 3, 4);
+    }
+
+    var makeCrcGraph = function() {
+        makeTimeGraph("CRC", 5, 6);
+    }
+
+
+    var makeSnrToneGraph = function() {
+        makeToneGraph("SNR / dB", snrUri);
+    }
+
+    var makeQlnToneGraph = function() {
+        makeToneGraph("QLN / dB", qlnUri);
+    }
+
+    var makeHlogToneGraph = function() {
+        makeToneGraph("Hlog / dB", hlogUri);
+    }
+
+    var makeBitsToneGraph = function() {
+        makeToneGraph("Bitloading", bitsUri);
+    }
+
+    var makeStatsGrid = function() {
+
+        getStats();
+
+        //if (dg) dg.destroy();
+        //console.log(dg);
+
+        document.getElementById("stats-grid").style.display = "grid";
+        document.getElementById("graphcontainer").style.display = "none";
+    }
+
+    //Fudge to overlap tones for nicer looking graphs
+    var withinRange = function(range, index){
+        if((index >= range[0]-1 &&  index <= range[1]+1) ||
+            (index >= range[2]-1 && index <= range[3]+1)
+            || (index >= range[4]-1 && index <= range[5]+1) ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
+    var getDataPerTone = function (dataFile){
+
+        var lines = dataFile.split("\n");
+
+        var toneLine = 0;
+
+        while(lines[toneLine].split(" ")[0] != "Tone"){
+            toneLine++;
+        }
+        //Next is first tone data line
+        toneLine++;
+
+        var dyData = [];
+
+        for(i=toneLine; i < lines.length-1; i++){
+
+            var up;
+            var down;
+
+            var toneNumber = i - toneLine;
+
+            var splitLine = lines[i].match(/\S+/g);
+
+            if( withinRange(toneRange.upRange, toneNumber)){
+                up = Number(splitLine[1]);
+            }else{
+                up = NaN;
+            }
+
+            if( withinRange(toneRange.downRange, toneNumber)){
+                down = Number(splitLine[1]);
+            }else{
+                down = NaN;
+            }
+
+            dyData[toneNumber] = [ toneNumber, up, down ];
+        }
+
+        return dyData;
+    }
+
+
+    var getLogDataIndex = function (logfile, curTime, downIndex, upIndex){
+
+        var lines = logfile.split("\n");
+
+        var timeOffset = Math.floor((Date.now()/1000) - curTime);
+
+        var dyData = [];
+
+        for(i=0; i < lines.length-1; i++){
+
+            var up;
+            var down;
+
+            var values = lines[i].split(" ");
+            var time = Number(values[0]) + timeOffset;
+            var d = new Date(time*1000);
+
+
+            up = Number(values[upIndex]);
+            down = Number(values[downIndex]);
+
+            //Fudge for bugged negative upstream SNR
+            //Probably VMG1312 specific
+            if(downIndex == 1 && upIndex == 2){
+                if(values[upIndex] > 99) up = 100 - Number(values[upIndex]);
+            }
+
+            dyData[i] = [ d, up, down];
+        }
+
+        return dyData;
+    }
+
+
+    var getTopToneUsed = function (dataFile){
+
+        var lines = dataFile.split("\n");
+
+        var lastToneLine = lines.length - 2;
+
+        while(lines[lastToneLine].match(/\S+/g)[1] <= 0){
+            lastToneLine--;
+        }
+
+        topTone = Number(lines[lastToneLine].match(/\S+/g)[0]) + 5;
+
+    }
+
+
+    //Correct logfile stamps to browser time before saving
+    var updateLogTimeSave = function(logfile, curTime){
+
+        var timeOffset = Math.floor((Date.now()/1000) - curTime);
+
+        var lines = logfile.split("\n");
+
+        var newLog = "";
+        
+        for(i=0; i < lines.length-1; i++){
+
+            var values = lines[i].split(" ");
+
+            var newTime = Number(values[0]) + timeOffset;
+
+            var newLine = "";
+            newLine += newTime;
+
+            for(j=1; j < values.length; j++){
+                newLine += " " + values[j];
+            }
+            newLine += "\n";
+
+            newLog += newLine;
+        }
+
+        return newLog;
+    }
+
+
+    var formatDate = function (date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear(),
+            hour = '' + d.getHours(),
+            minute = '' + d.getMinutes();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+        if (hour.length < 2) hour = '0' + hour;
+        if (minute.length < 2) minute = '0' + minute;
+
+        return [year, month, day, hour, minute].join('-');
+    }
+
+
+    var saveDataFunction = function(){
+
+        $.get(logfileUri, function(logfile, status){
+            $.get(curTimeUri, function(curTime, status){
+                $.get(statsFileUri, function(stats, status){
+                    $.get(vendorFileUri, function(vendor, status){
+                        $.get(snrUri, function(SNR, status){
+                            $.get(bitsUri, function(Bits, status){
+                                $.get(hlogUri, function(Hlog, status){
+                                    $.get(qlnUri, function(QLN, status){
+
+
+                                        var zip = new JSZip();
+
+                                        var d = new Date();
+
+                                        var dtag = formatDate(d);
+
+                                        zip.file("details.txt", `Stats & log saved at ${dtag}\n`);
+
+                                        var store = zip.folder("data");
+
+                                        var correctedLogfile = updateLogTimeSave(logfile, curTime);
+
+                                        store.file("logfile", correctedLogfile);
+                                        //store.file("logfile", logfile);
+                                        store.file("curTime", curTime);
+                                        store.file("stats", stats);
+                                        store.file("vendor", vendor);
+                                        store.file("SNR", SNR);
+                                        store.file("Bits", Bits);
+                                        store.file("Hlog", Hlog);
+                                        store.file("QLN", QLN);
+
+
+                                        zip.generateAsync({type:"blob"})
+                                            .then(function (blob) {
+                                                saveAs(blob, "vmgGraph-save-" + dtag + ".zip");
+                                            });
+
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+
+    //Expose public methods
+    return {
+
+        getLineDetails:getLineDetails,
+
+        makeStatsGrid:makeStatsGrid,
+
+        makeSnrmGraph:makeSnrmGraph,
+        makeFecGraph:makeFecGraph,
+        makeCrcGraph:makeCrcGraph,
+
+        makeSnrToneGraph:makeSnrToneGraph,
+        makeQlnToneGraph:makeQlnToneGraph,
+        makeHlogToneGraph:makeHlogToneGraph,
+        makeBitsToneGraph:makeBitsToneGraph,
+
+        saveData:saveData,
+
+        toggleScale:toggleScale,
+        toggleToneRange:toggleToneRange,
+        changeActive:changeActive
+    }
+
+})();
+
+
+</script>
+</body>
+</html>

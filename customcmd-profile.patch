@@ -1,0 +1,26 @@
+--- profile	2019-10-13 17:58:41.912597995 +0100
++++ customcmd_profile	2019-10-13 18:00:52.858072572 +0100
+@@ -99,6 +99,23 @@
+  # dumpsysinfo.sh, then save a copy of bootup messages for dumping later
+  test -e /opt/scripts/dumpsysinfo.sh && /bin/dmesg > /var/tmp/bootupmessages
+ 
++ if [ ! -f /data/boot-cmds.sh ];
++ then
++ echo "Creating initial boot-cmds.sh"
++ echo "#!/bin/bash" > /data/boot-cmds.sh
++ echo "" >> /data/boot-cmds.sh
++ echo "sleep 45" >> /data/boot-cmds.sh
++ echo "" >> /data/boot-cmds.sh
++ echo "# Place any commands here to run at boot" >> /data/boot-cmds.sh
++ echo "# eg:" >> /data/boot-cmds.sh
++ echo "" >> /data/boot-cmds.sh
++ echo "#xdslctl configure --maxDataRate 25000 2000 27000" >> /data/boot-cmds.sh
++ chmod +x /data/boot-cmds.sh
++ else
++ echo "Running custom boot commands"
++ /data/./boot-cmds.sh &
++ fi
++
+ # BUILD_GUI_DEBUG
+  
+  # As final step in system bootup, start smd, which will start configuration

@@ -1,0 +1,27 @@
+--- consumer_install	2019-06-26 02:14:29.746391023 +0100
++++ auto_consumer_install	2019-06-26 02:25:26.492333709 +0100
+@@ -12,7 +12,7 @@
+ echo "component is installed."
+ echo ""
+ echo ""
+-read -p "Press 'y' to continue: " -n 1 dr_continue
++dr_continue=y
+ echo ""
+ if [ "$dr_continue" != "y" ] ; then
+     echo "";
+@@ -30,7 +30,6 @@
+         echo "The bcm963xx DSL router source files are ready to be installed at "
+         echo "$bi_src_dir. Existing source files, in any, will be overwritten. "
+         echo ""
+-        read -p "Press 'y' to install the bcm963xx DSL router source files: " -n 1 dr_continue
+         echo ""
+         echo ""
+         if [ "$dr_continue" == "y" ] ; then
+@@ -62,7 +61,6 @@
+         echo "The BCM963xx DSL router toolchain is ready to be installed at $bi_crosstools_dir."
+         echo "Existing toolchain files, if any, will be overwritten."
+         echo ""
+-        read -p "Press 'y' to install the BCM963xx toolchain: " -n 1 dr_continue
+         echo ""
+         echo ""
+         if [ "$dr_continue" == "y" ] ; then

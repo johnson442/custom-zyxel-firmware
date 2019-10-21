@@ -1,0 +1,39 @@
+diff -Naur /tmp/consumer/bcm963xx_router/bcmdrivers/opensource/net/enet/impl4/Makefile /tmp/consumer/bcm963xx_router_jumbo/bcmdrivers/opensource/net/enet/impl4/Makefile
+--- /tmp/consumer/bcm963xx_router/bcmdrivers/opensource/net/enet/impl4/Makefile	2018-01-16 06:22:00.000000000 +0000
++++ /tmp/consumer/bcm963xx_router_jumbo/bcmdrivers/opensource/net/enet/impl4/Makefile	2018-05-18 05:20:50.777102020 +0100
+@@ -52,6 +52,7 @@
+ EXTRA_CFLAGS += -DEXPORT_SYMTAB
+ EXTRA_CFLAGS += -Werror -Wfatal-errors
+ EXTRA_CFLAGS += -g
++EXTRA_CFLAGS += -DCONFIG_BCM_ETH_JUMBO_FRAME
+ #EXTRA_CFLAGS +=  -DBCM_ENET_DEBUG_BUILD
+ #EXTRA_CFLAGS +=  -DBCM_ENET_RX_LOG
+ #EXTRA_CFLAGS +=  -DBCM_ENET_TX_LOG
+diff -Naur /tmp/consumer/bcm963xx_router/bcmdrivers/opensource/net/xtmrt/impl4/bcmxtmrt.c /tmp/consumer/bcm963xx_router_jumbo/bcmdrivers/opensource/net/xtmrt/impl4/bcmxtmrt.c
+--- /tmp/consumer/bcm963xx_router/bcmdrivers/opensource/net/xtmrt/impl4/bcmxtmrt.c	2018-01-16 06:02:21.000000000 +0000
++++ /tmp/consumer/bcm963xx_router_jumbo/bcmdrivers/opensource/net/xtmrt/impl4/bcmxtmrt.c	2018-05-18 05:22:20.753055496 +0100
+@@ -749,7 +749,8 @@
+                 {
+                     pDevCtx->Chan.private = pDevCtx->pDev;
+                     pDevCtx->Chan.ops = &g_PppoAtmOps;
+-                    pDevCtx->Chan.mtu = 1500; /* TBD. Calc value. */
++                    //pDevCtx->Chan.mtu = 1500; /* TBD. Calc value. */
++                    pDevCtx->Chan.mtu = 1508; /* TBD. Calc value. */
+                     pAtmVcc->user_back = pDevCtx;
+                     if( ppp_register_channel(&pDevCtx->Chan) == 0 )
+                         nRet = 0;
+@@ -3228,6 +3229,7 @@
+ 
+         default:
+             pDevCtx->ulEncapType = TYPE_ETH;    /* bridge, MER, PPPoE, PTM */
++            dev->mtu = 1508;
+             dev->flags = IFF_BROADCAST | IFF_MULTICAST;
+             break;
+         }
+@@ -5651,4 +5653,4 @@
+    }
+    return nRet;
+ }
+-#endif //__MSTC__, FuChia
+\ No newline at end of file
++#endif //__MSTC__, FuChia

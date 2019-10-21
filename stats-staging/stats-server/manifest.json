@@ -1,0 +1,21 @@
+{
+  "short_name": "VmgGraphs",
+  "name": "VmgGraphs",
+  "icons": [
+    {
+      "src": "icons/vmg-graphs-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icons/vmg-graphs-512-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "theme_color": "#FFFFFF"
+}
+
