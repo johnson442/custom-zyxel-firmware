@@ -192,7 +192,7 @@ if [ "$build" != "${build#[Yy]}" ] ;then
         mkdir $customdir/images
     fi
 
-    model="8324-B10A-"
+    model="8x24-B10A-"
     customversion+=".bin"
     model+=$customversion
     cp images/ras.bin $customdir/images/$model

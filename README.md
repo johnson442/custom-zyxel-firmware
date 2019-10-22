@@ -1,3 +1,4 @@
+
 # VMG1312/8x24 Custom Firmware Build System
  
 Dockerfile and scripts for creating the (old) environment required to build firmware images for Zyxel VMG1312-B10A & VMG8x24-B10A modem/routers, including helper script and patches to enable:
@@ -16,13 +17,13 @@ Latest firmware from Zyxel include the A2pv6F039**v** DSL modem code, other devi
 Place holder script in /data partition run once every boot to allow persistent changes to target SNRM or line capping. See /data/boot-cmds.sh after first boot for details.
  
 #### Modem stats server with logging and web interface
-A small mongoose based http server with simple visualisation of real time and logged statistics avaliable by default on modemip:8000. 
+A small mongoose based http server with simple visualisation of real time and logged statistics avaliable by default on modem-ip:8000. 
 
 ![screen1](/stats-staging/screenshot1.png?raw=true "Stats screenshot1")
 
 ![screen2](/stats-staging/screenshot2.png?raw=true "Stats screenshot2")
 
-48h line statistics are captured, see stats-server/stats-logging.sh for details.
+48h line statistics are captured, see stats-server/stats-logging.sh for details. Information usually requiring telnet/ssh to access (e.g xdslctl output) is available via HTTP at modem-ip:8000/data, see directory listing for naming.
 
 
 ## Prerequisites
@@ -77,3 +78,4 @@ docker start -i vmg-build
 
 ### Disclaimer
 Released [binaries](https://github.com/johnson442/custom-zyxel-firmware/releases) have been at minimum tested to boot on correct hardware, but use at your own risk. Having a serial adapter on hand is highly encouraged.
+
