@@ -349,6 +349,7 @@ var vmgGraphs = (function(){
 
                 while(split[modeLine].match(/\S+/g)[0] != "Mode:"){
                     modeLine++;
+                    if(!split[modeLine]) modeLine++;
                 }
 
                 var modeSplit = split[modeLine].match(/\S+/g) || [];
@@ -548,6 +549,7 @@ var vmgGraphs = (function(){
 
             while(split[statLine].match(/\S+/g)[0] != "SNR"){
                 statLine++;
+                if(!split[statLine]) statLine++;
             }
 
             statSplit = split[statLine].match(/\S+/g) || [];
