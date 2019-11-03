@@ -14,7 +14,9 @@ Latest firmware from Zyxel include the A2pv6F039**v** DSL modem code, other devi
 
 #### Custom commands at boot
 
-Place holder script in /data partition run once every boot to allow persistent changes to target SNRM or line capping. See /data/boot-cmds.sh after first boot for details.
+Place holder script in /data partition run once every boot to allow persistent changes to target SNRM or line capping. See /data/boot-cmds.sh after first boot for details, editing requires telnet/ssh using supervisor account or by escaping to busybox from admin account.
+
+Please stick to known working commands, test before rebooting.
  
 #### Modem stats server with logging and web interface
 A small mongoose based http server with simple visualisation of real time and logged statistics avaliable by default on modem-ip:8000. 
@@ -78,4 +80,5 @@ docker start -i vmg-build
 
 ### Disclaimer
 Released [binaries](https://github.com/johnson442/custom-zyxel-firmware/releases) have been at minimum tested to boot on correct hardware, but use at your own risk. Having a serial adapter on hand is highly encouraged.
+
 
