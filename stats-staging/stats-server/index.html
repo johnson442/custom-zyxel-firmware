@@ -363,6 +363,7 @@ var vmgGraphs = (function(){
                         var vendorLine = 0;
                         while(split[vendorLine].match(/\S+/g)[0] != "ChipSet"){
                             vendorLine++;
+                            if(!split[vendorLine]) vendorLine++;
                         }
 
                         var provider = split[vendorLine].match(/\S+/g)[3].split(":")[0];

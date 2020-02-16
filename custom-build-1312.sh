@@ -147,7 +147,7 @@ if [ "$stats" != "${stats#[Yy]}" ] ;then
     cd $bcmdir/bcm963xx_router/targets/fs.src/etc/
     patch < $customdir/stats-staging/stats-profile.patch
 
-    customversion+="-stats"
+    customversion+="-stats1.1"
 
     echo "Stats logging and webserver enabled"
 fi
