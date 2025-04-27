@@ -1,0 +1,11 @@
+--- bcm963xx_router/bcmdrivers/opensource/include/bcm963xx/bcmgmac.h	2025-04-24 00:48:27.323309091 +0000
++++ bcm963xx_router/bcmdrivers/opensource/include/bcm963xx/bcmgmac-1526.h	2025-04-24 00:51:44.262938695 +0000
+@@ -85,7 +85,7 @@
+ #define GMAC_RB_BP_THRESH_LO_DEF    0x200
+ #define GMAC_RB_BP_THRESH_HI_DEF    0x300
+ 
+-#define GMAC_MAX_FRM_LEN            1518
++#define GMAC_MAX_FRM_LEN            1526
+ #define GMAC_MAX_JUMBO_FRM_LEN      2000
+ 
+ extern uint32_t gmac_print_ena_g;  

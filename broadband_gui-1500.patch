@@ -1,0 +1,48 @@
+diff -ru clean/userspace/private/apps/httpd/html/Common/pages/network/broadband/broadband_add.html bcm963xx_router/userspace/private/apps/httpd/html/Common/pages/network/broadband/broadband_add.html
+--- clean/userspace/private/apps/httpd/html/Common/pages/network/broadband/broadband_add.html	2019-02-26 12:21:54.000000000 +0000
++++ bcm963xx_router/userspace/private/apps/httpd/html/Common/pages/network/broadband/broadband_add.html	2025-04-24 01:21:05.756199575 +0000
+@@ -567,8 +567,8 @@
+             showhide("AddrMapping", 0);
+             showhide("mtuInfo", 1);
+             doPppTriggerType();
+-            document.getElementById("mtuRange").innerHTML = "<%ejGetML(MLG_WAN_Broadband_Str61)%> [68-1492]\n";
+-            MTUshow.value = "1492";
++            document.getElementById("mtuRange").innerHTML = "<%ejGetML(MLG_WAN_Broadband_Str61)%> [68-1500]\n";
++            MTUshow.value = "1500";
+             if(wan_Encapsulation.value == 1 && forCodetel == 0){
+                 document.getElementById("mtuRange").innerHTML = "<%ejGetML(MLG_WAN_Broadband_Str61)%> [68-1500]\n";
+                 MTUshow.value = "1500";
+@@ -1316,7 +1316,7 @@
+                 if(MTUshow.value == ""){
+                     hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str35)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+-                }else if(isNaN(MTUshow.value) == true ||(MTUshow.value < 68) || (MTUshow.value > 1492)){
++                }else if(isNaN(MTUshow.value) == true ||(MTUshow.value < 68) || (MTUshow.value > 1500)){
+                     hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str35)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                 }else
+diff -ru clean/userspace/private/apps/httpd/html/Common/pages/network/broadband/broadband_edit.html bcm963xx_router/userspace/private/apps/httpd/html/Common/pages/network/broadband/broadband_edit.html
+--- clean/userspace/private/apps/httpd/html/Common/pages/network/broadband/broadband_edit.html	2019-02-26 12:21:54.000000000 +0000
++++ bcm963xx_router/userspace/private/apps/httpd/html/Common/pages/network/broadband/broadband_edit.html	2025-04-24 01:21:05.757874584 +0000
+@@ -670,9 +670,9 @@
+             }
+             else
+             {
+-                document.getElementById("mtuRange").innerHTML = "<%ejGetML(MLG_WAN_Broadband_Str61)%>  [68-1492]\n";
+-                if (mtusize > 1492)
+-                    MTUshow.value = "1492";
++                document.getElementById("mtuRange").innerHTML = "<%ejGetML(MLG_WAN_Broadband_Str61)%>  [68-1500]\n";
++                if (mtusize > 1500)
++                    MTUshow.value = "1500";
+                 else
+                     MTUshow.value = mtusize;
+             }
+@@ -1762,7 +1762,7 @@
+                 if(MTUshow.value == "") {
+                     hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str35)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+-                } else if(isNaN(MTUshow.value) == true ||(MTUshow.value < 68) || (MTUshow.value > 1492)){
++                } else if(isNaN(MTUshow.value) == true ||(MTUshow.value < 68) || (MTUshow.value > 1500)){
+                     hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str35)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                 } else {

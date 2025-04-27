@@ -1,0 +1,11 @@
+--- clean/userspace/public/apps/ppp/pppoe/plugins/pppoe/pppoe.c	2019-02-26 12:32:37.000000000 +0000
++++ bcm963xx_router/userspace/public/apps/ppp/pppoe/plugins/pppoe/pppoe.c	2025-01-29 02:59:03.349220164 +0000
+@@ -40,7 +40,7 @@
+ 
+ #define _PATH_ETHOPT         _ROOT_PATH "/etc/ppp/options."
+ 
+-#define PPPOE_MTU	1492
++#define PPPOE_MTU	1500
+ extern int kill_link;
+ 
+ // brcm
