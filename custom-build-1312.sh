@@ -47,6 +47,9 @@ fi
 echo -n "Apply jumbo frames patch? (y/n)? "
 read jumbo
 
+echo -n "Apply pppd patches? (y/n)? "
+read pppd
+
 echo -n "Enable multiple telnet sessions? (y/n)? "
 read telnet
 
@@ -69,6 +72,7 @@ read stats
 echo ""
 
 echo "Jumbo frames - $jumbo"
+echo "pppd patches - $pppd"
 echo "Multiple telnet - $telnet"
 echo "Updated adsl_phy (x6) - $adslx6"
 echo "Updated adsl_phy (x1) - $adslx1"
@@ -100,6 +104,17 @@ if [ "$jumbo" != "${jumbo#[Yy]}" ] ;then
     patch -p3 < $customdir/jumboframes.patch
     customversion+="-jumbo"
     echo "Jumbo frames enabled"
+fi
+
+if [ "$pppd" != "${pppd#[Yy]}" ] ;then
+    cd $bcmdir
+    patch -p0 < $customdir/pppoe-1500.patch
+    patch -p0 < $customdir/broadband_gui-1500.patch
+    cd $bcmdir/bcm963xx_router/userspace/private/libs/cms_core/
+    $customdir/libcms_core_patch.sh
+
+    customversion+="-pppd"
+    echo "pppd & libcms_core patched"
 fi
 
 if [ "$telnet" != "${telnet#[Yy]}" ] ;then
@@ -147,7 +162,7 @@ if [ "$stats" != "${stats#[Yy]}" ] ;then
     cd $bcmdir/bcm963xx_router/targets/fs.src/etc/
     patch < $customdir/stats-staging/stats-profile.patch
 
-    customversion+="-stats1.1"
+    customversion+="-stats"
 
     echo "Stats logging and webserver enabled"
 fi
