@@ -1,6 +1,7 @@
 #!/bin/bash
 
-libcms=libcms_core.so_VMG8924-B10A_save
+path=$(pwd)
+libcms=( "$path"/libcms_core.so_*_save )
 
 offset=$(strings -t d $libcms | grep "M 1492" | awk '{print $1}')
 
